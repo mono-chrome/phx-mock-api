@@ -1,0 +1,20 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mock-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-01-30",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "JWT_SECRET": "my-strong-secret"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "auth-db",
+      "database_id": "548a8d7c-228f-43e0-9c0e-6a782963f1c1"
+    }
+  ],
+  "observability": {
+    "enabled": false
+  }
+}
