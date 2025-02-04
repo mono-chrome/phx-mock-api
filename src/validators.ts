@@ -85,6 +85,7 @@ function validateUserUpdate(fields: Partial<UserUpdate>): ValidationResult {
         error: `Field ${key} cannot be modified.`,
       };
     }
+
     if (key in validators) {
       const validator = validators[key as keyof typeof validators]; // I hate typescript
       const result = validator(value as never);
