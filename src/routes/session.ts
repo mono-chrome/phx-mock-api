@@ -17,7 +17,6 @@ const sessionHandler = async (c: Context) => {
       sub: sessionId,
       exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
       iss: "PHX - JF from the ashes",
-      user: `s${sessionId}@loggedout.session`,
       segment: "anonymous",
       store: 9,
       gender: "female",

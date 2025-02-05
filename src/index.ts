@@ -47,7 +47,7 @@ app.get("/", async (c) => {
 |  _ \\| | | \\ \\/ /     / \\  |  _ \\_ _|
 | |_) | |_| |\\  /     / _ \\ | |_) | | 
 |  __/|  _  |/  \\    / ___ \\|  __/| | 
-|_|   |_| |_/_/\\_\\  /_/   \\_\\_|  |___|  v 0.5
+|_|   |_| |_/_/\\_\\  /_/   \\_\\_|  |___|  v 0.6
 
 ┌───────────┬───────┬───────────┬─────────────────────────────────────────────┐
 │ ENDPOINT  │ TYPE  │ PATH      │ REQUIREMENTS                                │
@@ -71,8 +71,8 @@ app.get("/", async (c) => {
 │           │       │           │  - email     : string  (required)           │
 │           │       │           │  - password  : string  (required)           │
 ├───────────┼───────┼───────────┼─────────────────────────────────────────────┤
-│ Logout    │ POST  │ /logout   │ Header -> Authorization: Bearer <token>     │
-│ User      │       │           │                                             │
+│ Logout    │ POST  │ /logout   │ Requires Logged-in token                    │
+│ User      │       │           │ Header -> Authorization: Bearer <token>     │
 ├───────────┼───────┼───────────┼─────────────────────────────────────────────┤
 │ Edit      │ PATCH │ /user/:id │ Header -> Authorization: Bearer <token>     │
 │ User      │       │           │                                             │
@@ -88,17 +88,17 @@ app.get("/", async (c) => {
 │           │       │           │                'funnel_<string(23)>'        │
 │           │       │           │  store?      : number (0-99)                │
 ├───────────┼───────┼───────────┼─────────────────────────────────────────────┤
-│ Protected │ GET   │ /page     │ Header -> Authorization: Bearer <token>     │
-│ route ex. │       │           │                                             │
+│ Protected │ GET   │ /page     │ Requires Logged-in token                    │
+│ route ex. │       │           │ Header -> Authorization: Bearer <token>     │
 ├───────────┼───────┼───────────┼─────────────────────────────────────────────┤
-│ Userlist  │ GET   │ /users    │ Header -> Authorization: Bearer <token>     │
+│ Userlist  │ GET   │ /users    │ Requires Logged-in token                    │
+│           │       │           │ Header -> Authorization: Bearer <token>     │
 ├───────────┴───────┴───────────┴─────────────────────────────────────────────┤
 │ Notes:                                                                      │
 │ - JWT + all inputs are sanitized and protected against SQLI                 │
 │ - Token expires after 45 minutes                                            │
 │                                                                             │
 │ TODO:                                                                       │
-│ - Modify middlewares to allow for specific logged-out/in endpoints. (20min) │
 │ - Implement issuing, updating + revoking Cookie header for JWT. (30min)     │
 │ - Add PHX-API-KEY header and issue api keys for guarded api access. (35min) │
 │                                                                             │
