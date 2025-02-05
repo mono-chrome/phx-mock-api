@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { jwtMiddleware, requireLogin } from "./middlewares";
+import { jwtMiddleware, requireApiKey, requireLogin } from "./middlewares";
 import { sessionHandler } from "./routes/session";
 import { signupHandler } from "./routes/signup";
 import { loginHandler } from "./routes/login";
@@ -7,10 +7,12 @@ import { logoutHandler } from "./routes/logout";
 import { pageHandler } from "./routes/protected";
 import { editUsersHandler, listUsersHandler } from "./routes/users";
 import type { JwtVariables } from "hono/jwt";
+import { cors } from "hono/cors";
 
 export type Bindings = {
   DB: D1Database;
   JWT_SECRET: string;
+  API_KEY: string;
 };
 
 export interface User {
@@ -27,6 +29,10 @@ export interface User {
 }
 
 const app = new Hono<{ Bindings: Bindings; Variables: JwtVariables }>();
+
+app.use(cors());
+
+app.use(requireApiKey);
 
 app.get("/session", sessionHandler);
 
