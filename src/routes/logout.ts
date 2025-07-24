@@ -1,5 +1,6 @@
 import { querySanitizer } from "@/utils";
 import { Context } from "hono";
+import { deleteCookie } from "hono/cookie";
 
 const logoutHandler = async (c: Context) => {
   const payload = c.get("jwtPayload");
@@ -15,8 +16,10 @@ const logoutHandler = async (c: Context) => {
       .bind(payload.jti, payload.sub)
       .run();
 
+    deleteCookie(c, "phx_token");
     return c.json({ message: "Logged out" });
   } catch (err) {
+    deleteCookie(c, "phx_token");
     return c.json({ message: "User already logged out." });
   }
 };

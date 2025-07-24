@@ -30,13 +30,11 @@ export interface User {
 
 const app = new Hono<{ Bindings: Bindings; Variables: JwtVariables }>();
 
-app.use(cors());
-
-app.use(requireApiKey);
+app.use(cors(), requireApiKey);
 
 app.get("/session", sessionHandler);
 
-app.post("/signup", signupHandler);
+app.post("/signup", jwtMiddleware, signupHandler);
 
 app.post("/login", jwtMiddleware, loginHandler);
 
@@ -53,13 +51,13 @@ app.get("/", async (c) => {
 |  _ \\| | | \\ \\/ /     / \\  |  _ \\_ _|
 | |_) | |_| |\\  /     / _ \\ | |_) | | 
 |  __/|  _  |/  \\    / ___ \\|  __/| | 
-|_|   |_| |_/_/\\_\\  /_/   \\_\\_|  |___|  v 0.6
+|_|   |_| |_/_/\\_\\  /_/   \\_\\_|  |___|  v 0.8 (Feb 5, 08:40PM)
 
-┌───────────┬───────┬───────────┬─────────────────────────────────────────────┐
+╭───────────┬───────┬───────────┬─────────────────────────────────────────────╮
 │ ENDPOINT  │ TYPE  │ PATH      │ REQUIREMENTS                                │
 ├───────────┼───────┼───────────┼─────────────────────────────────────────────┤
-│ Create    │ GET   │ /session  │ No requirements.                            │
-│ Session   │       │           │ Generates new Session.                      │
+│ Create    │ GET   │ /session  │                                             │
+│ Session   │       │           │                                             │
 ├───────────┼───────┼───────────┼─────────────────────────────────────────────┤
 │ Signup    │ POST  │ /signup   │ JSON body:                                  │
 │ User      │       │           │  email       : string  (required)           │
@@ -71,19 +69,15 @@ app.get("/", async (c) => {
 │           │       │           │                'funnel_<string(23)>'        │
 │           │       │           │  store?      : number (0-99)                │
 ├───────────┼───────┼───────────┼─────────────────────────────────────────────┤
-│ Login     │ POST  │ /login    │ Header -> Authorization: Bearer <token>     │
-│ User      │       │           │                                             │
-│           │       │           │ JSON body:                                  │
-│           │       │           │  - email     : string  (required)           │
-│           │       │           │  - password  : string  (required)           │
+│ Login     │ POST  │ /login    │ JSON body:                                  │
+│ User      │       │           │  email     : string  (required)             │
+│           │       │           │  password  : string  (required)             │
 ├───────────┼───────┼───────────┼─────────────────────────────────────────────┤
-│ Logout    │ POST  │ /logout   │ Requires Logged-in token                    │
-│ User      │       │           │ Header -> Authorization: Bearer <token>     │
-├───────────┼───────┼───────────┼─────────────────────────────────────────────┤
-│ Edit      │ PATCH │ /user/:id │ Header -> Authorization: Bearer <token>     │
+│ Logout    │ POST  │ /logout   │                                             │
 │ User      │       │           │                                             │
-│           │       │           │ Param 'id' -> jwt.sub = user-id  (required) │
-│           │       │           │                                             │
+├───────────┼───────┼───────────┼─────────────────────────────────────────────┤
+│ Edit      │ PATCH │ /user/:id │ Param 'id' -> jwt.sub = user-id  (required) │
+│ User      │       │           │                                             │
 │           │       │           │ JSON body:                                  │
 │           │       │           │  email?      : string                       │
 │           │       │           │  password?   : string                       │
@@ -94,22 +88,19 @@ app.get("/", async (c) => {
 │           │       │           │                'funnel_<string(23)>'        │
 │           │       │           │  store?      : number (0-99)                │
 ├───────────┼───────┼───────────┼─────────────────────────────────────────────┤
-│ Protected │ GET   │ /page     │ Requires Logged-in token                    │
-│ route ex. │       │           │ Header -> Authorization: Bearer <token>     │
+│ Protected │ GET   │ /page     │                                             │
+│ route ex. │       │           │                                             │
 ├───────────┼───────┼───────────┼─────────────────────────────────────────────┤
-│ Userlist  │ GET   │ /users    │ Requires Logged-in token                    │
-│           │       │           │ Header -> Authorization: Bearer <token>     │
+│ Userlist  │ GET   │ /users    │                                             │
 ├───────────┴───────┴───────────┴─────────────────────────────────────────────┤
 │ Notes:                                                                      │
+│ - Calling /session will start you off with a cookie                         │
+│   You can alternatively provide an Authorization: "Bearer <token>" header   │
+│ - All routes other than this one require an API key (just ask)              │
 │ - JWT + all inputs are sanitized and protected against SQLI                 │
 │ - Token expires after 45 minutes                                            │
-│                                                                             │
-│ TODO:                                                                       │
-│ - Implement issuing, updating + revoking Cookie header for JWT. (30min)     │
-│ - Add PHX-API-KEY header and issue api keys for guarded api access. (35min) │
-│                                                                             │
 │ - JWT segment data is WIP                                                   │
-│   ┌─────────────────────┐                                                   │
+│   ╭─────────────────────╮                                                   │
 │   │ sub: uuid           │                                                   │
 │   │ exp: unix_timestamp │                                                   │
 │   │ iss: string         │                                                   │
@@ -117,8 +108,8 @@ app.get("/", async (c) => {
 │   │ store: integer      │                                                   │
 │   │ gender: string      │                                                   │
 │   │ jti: jwt_uuid       │                                                   │
-│   └─────────────────────┘                                                   │
-└─────────────────────────────────────────────────────────────────────────────┘
+│   ╰─────────────────────╯                                                   │
+╰─────────────────────────────────────────────────────────────────────────────╯
 `);
 });
 

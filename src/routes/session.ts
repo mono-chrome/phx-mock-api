@@ -2,6 +2,7 @@ import { sign } from "hono/jwt";
 import { generateSessionId } from "@/utils";
 import { v4 as uuidv4 } from "uuid";
 import { Context } from "hono";
+import { setCookie } from "hono/cookie";
 
 const sessionHandler = async (c: Context) => {
   const sessionId = generateSessionId();
@@ -24,6 +25,8 @@ const sessionHandler = async (c: Context) => {
     };
 
     const token = await sign(payload, c.env.JWT_SECRET);
+    setCookie(c, "phx_token", token);
+
     return c.json({ access_token: token });
   } catch (error) {
     return c.json({ error: "Failed to create session" }, 500);

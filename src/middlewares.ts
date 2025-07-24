@@ -1,6 +1,7 @@
 import { createMiddleware } from "hono/factory";
 import { jwt, verify } from "hono/jwt";
 import { HTTPException } from "hono/http-exception";
+import { getCookie } from "hono/cookie";
 
 const requireApiKey = createMiddleware(async (c, next) => {
   if (c.req.path === "/") {
@@ -24,13 +25,13 @@ const requireApiKey = createMiddleware(async (c, next) => {
 const jwtMiddleware = createMiddleware(async (c, next) => {
   return jwt({
     secret: c.env.JWT_SECRET,
-    cookie: "token",
+    cookie: "phx_token",
     alg: "HS256",
   })(c, next);
 });
 
 const requireLogin = createMiddleware(async (c, next) => {
-  const token = c.req.header("Authorization")?.split(" ")[1];
+  const token = getCookie(c, "phx_token");
 
   if (!token) {
     return c.json({ error: "Invalid token" }, 401);

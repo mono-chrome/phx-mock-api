@@ -2,6 +2,7 @@ import { Context } from "hono";
 import { querySanitizer, verifyPassword } from "@/utils";
 import { sign } from "hono/jwt";
 import { v4 as uuidv4 } from "uuid";
+import { setCookie } from "hono/cookie";
 import type { JwtVariables } from "hono/jwt";
 import type { Bindings } from "..";
 import { User } from "..";
@@ -80,6 +81,8 @@ const loginHandler = async (
   };
 
   const token = await sign(payload, c.env.JWT_SECRET);
+  setCookie(c, "phx_token", token);
+
   return c.json({ logged_in_access_token: token });
 };
 export { loginHandler };

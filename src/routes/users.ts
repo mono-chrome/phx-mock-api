@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { hashPassword, querySanitizer } from "@/utils";
 import { validateUserUpdate } from "@/validators";
 import { Context } from "hono";
+import { setCookie } from "hono/cookie";
 
 const editUsersHandler = async (c: Context) => {
   const userId = c.req.param("id");
@@ -111,9 +112,11 @@ const editUsersHandler = async (c: Context) => {
     };
 
     const newToken = await sign(newPayload, c.env.JWT_SECRET);
+    setCookie(c, "phx_token", newToken);
+
     return c.json({
       message: "User updated successfully",
-      access_token: newToken,
+      modified_access_token: newToken,
     });
   } catch (dbError) {
     return c.json(`Update Error: ${dbError}`);
